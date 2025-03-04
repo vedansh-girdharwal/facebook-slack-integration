@@ -1,0 +1,55 @@
+const winston = require("winston");
+
+const color = (value, level) => {
+  level = !level ? value : level;
+  const color = {
+    error: "\x1b[31m",
+    warn: "\x1b[33m",
+    info: "\x1b[32m",
+    verbose: "\x1b[35m",
+    debug: "\x1b[34m",
+    silly: "\x1b[36m",
+  };
+  return (color[level] || "") + value + "\x1b[0m";
+};
+
+const { splat, combine, timestamp, json, errors, simple, printf } =
+  winston.format;
+
+// meta param is ensured by splat()
+const myFormat = json(({ timestamp, level, message, meta }) => {
+  return `${timestamp} ${level} ${message} ${meta ? JSON.stringify(meta) : ""}`;
+});
+
+const simpleFormat = simple();
+
+const customFormat = printf(({ timestamp, level, message, ...meta }) => {
+  let newline = "";
+  if (typeof message === "object") {
+    message = JSON.stringify(message);
+  } else if (typeof message === "string" && message.startsWith("\n")) {
+    newline = "\n";
+    message = message.slice(1);
+  }
+  const meta_str = Object.keys(meta).length ? " - " + JSON.stringify(meta) : "";
+  return `${newline}| ${color(level)} | ${timestamp} | ${color(
+    message,
+    level
+  )}${meta_str}`;
+});
+
+const options = {
+  console: {
+    level: "info",
+    handleExceptions: true,
+    handleRejections: true,
+    json: true,
+  },
+};
+
+const logger = winston.createLogger({
+  format: combine(errors({ stack: true }), timestamp(), splat(), customFormat),
+  transports: [new winston.transports.Console(options.console)],
+});
+
+module.exports = logger;
