@@ -6,7 +6,7 @@ const {
 } = require("../../middlewares/checkAuthToken");
 const defaultRouter = express.Router();
 
-const base_path = process.env.BASE_PATH;
+const base_path = process.env.BASE_PATH || "";
 
 const getRouteFiles = (source) =>
   readdirSync(source, { withFileTypes: true })

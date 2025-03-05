@@ -7,7 +7,7 @@ function connect() {
     .set("strictQuery", false)
     .connect(MONGO_URI, {dbName: "slack-facebook-integration"})
     .then(() => {
-      logger.info("MongoDB connected");
+      logger.info("MongoDB connected to database");
     })
     .catch((err) => {
       logger.error("Error connecting mongodb", err);
