@@ -29,7 +29,7 @@ const routeUtils = {
                     ? "We're unable to process your request at the moment"
                     : error.customMessage || error.message,
             status,
-            code: errorCode,
+            code: 500,
             exception: error.name,
         };
         if (error.meta) {
